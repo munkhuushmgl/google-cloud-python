@@ -19,7 +19,7 @@ from synthtool import gcp
 
 gapic = gcp.GAPICGenerator()
 common = gcp.CommonTemplates()
-versions = ["v3beta1", "v3"]
+versions = ["v3beta1"]
 
 excludes = [
     "setup.py",
@@ -34,19 +34,25 @@ excludes = [
 # Generate asset GAPIC layer
 # ----------------------------------------------------------------------------
 for version in versions:
-    library = gapic.py_library("translate", version, include_protos=True)
+    library = gapic.py_library(
+        "translate",
+        version,
+        include_protos=True,
+        include_samples=True
+    )
 
     # s.move(library / f'google/cloud/translation_{version}', f'google/cloud/translate_{version}', excludes=excludes)
     s.move(library / f"google/cloud/translate_{version}", excludes=excludes)
     s.move(library / "tests")
+    s.move(library / "samples")
     s.move(library / f"docs/gapic/{version}")
 
-    # translation -> translate
-    s.replace(
-        "google/**/translation_service_pb2_grpc.py",
-        f"google.cloud.translation_{version}.proto",
-        f"google.cloud.translate_{version}.proto",
-    )
+# translation -> translate
+s.replace(
+    "google/**/translation_service_pb2_grpc.py",
+    "google.cloud.translation_v3beta1.proto",
+    "google.cloud.translate_v3beta1.proto",
+)
 
 s.replace(
     "google/cloud/**/translation_service_pb2.py",

@@ -1,0 +1,43 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Translating Text (without glossaries)
+
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+
+    cases:
+    - name: Translating Content (simple)
+      spec:
+      - call:
+          sample: translate_translate_text_beta
+          params:
+            project: {variable: project_id}
+      - assert_contains:
+        # Translation for "Hello, world!"
+        - literal: "Bonjour le monde!"
+
+    - name: Translating Content (text provided)
+      spec:
+      - call:
+          sample: translate_translate_text_beta
+          params:
+            text: {literal: "Goodnight, moon!"}
+            project: {variable: project_id}
+      - assert_contains:
+        - literal: "Bonne nuit lune!"
+
+    - name: Translating Content (text + source/target languages provided)
+      spec:
+      - call:
+          sample: translate_translate_text_beta
+          params:
+            text: {literal: "Bonjour le monde!"}
+            source_language: {literal: "fr"}
+            target_language: {literal: "en"}
+            project: {variable: project_id}
+      - assert_contains:
+        - literal: "Hi world!"

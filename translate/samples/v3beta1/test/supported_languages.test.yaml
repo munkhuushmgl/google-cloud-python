@@ -1,0 +1,47 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Discovering Supported Languages
+
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+
+    cases:
+
+    - name: Getting a list of supported language codes
+      spec:
+      - call:
+          sample: translate_list_codes_beta
+          params:
+            project: {variable: project_id}
+      - assert_contains:
+        - literal: "Language Code: en"
+        - literal: "Language Code: fr"
+
+    - name: Listing supported languages with target language name
+      spec:
+      - call:
+          sample: translate_list_language_names_beta
+          params:
+            project: {variable: project_id}
+      - assert_contains:
+        - literal: "Language Code: en"
+        - literal: "Display Name: English"
+        - literal: "Language Code: fr"
+        - literal: "Display Name: French"
+
+    - name: Listing supported languages with target language name (provide language)
+      spec:
+      - call:
+          sample: translate_list_language_names_beta
+          params:
+            project: {variable: project_id}
+            language_code: {literal: "fr"}
+      - assert_contains:
+        - literal: "Language Code: en"
+        - literal: "Display Name: Anglais"
+        - literal: "Language Code: fr"
+        - literal: "Display Name: Français"

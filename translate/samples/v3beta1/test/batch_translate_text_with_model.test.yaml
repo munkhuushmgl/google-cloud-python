@@ -1,0 +1,42 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Batch Translating Text with Model
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+    - env:
+        name: AUTOML_TRANSLATION_MODEL_ID
+        variable: model_id
+    - code: bucket_name = "gs://translation_samples_beta/" + uuid().replace("-", "")[:30] + "/"
+    - code: model_path = "projects/{}/locations/{}/models/{}".format(project_id, "us-central1", model_id)
+    - shell: ["gsutil mb", bucket_name]
+    teardown:
+    - shell: ["gsutil rm -r", bucket_name]
+    cases:
+    - name: Batch Translating Content (simple)
+      spec:
+      - call:
+          sample: batch_translate_text_with_model
+          params:
+            project: {variable: project_id}
+            location: {literal: "us-central1"}
+            target_language: {literal: "ja"}
+            source_language: {literal: "en"}
+            input_uri: {literal: "gs://translation_samples_beta/resources/custom_model_text.txt"}
+            output_uri: {variable: bucket_name}
+            model_path: {variable: model_path}
+      - assert_contains:
+        - literal: "Total Characters: 15"
+        - literal: "Translated Characters: 15"
+      - code: filter = bucket_name + "*.txt"
+      - shell: ["gsutil ls", filter]
+      - extract_match:
+          pattern: gs://(.*)
+          variable: output_file_name
+      - code: bucket_full_path = "gs://" + output_file_name
+      - shell: ["gsutil cat", bucket_full_path]
+      - assert_contains:
+        - literal: "それはそうだ"

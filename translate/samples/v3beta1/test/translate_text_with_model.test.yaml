@@ -1,0 +1,27 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Translate Text with Model
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+    - code: model_id = "TRL2188848820815848149"
+    - code: model_path = "projects/{}/locations/{}/models/{}".format(project_id, "us-central1", model_id)
+
+    cases:
+    - name: Translating Content with model (text provided)
+      spec:
+      - call:
+          sample: translate_translate_text_with_model
+          params:
+            project: {variable: project_id}
+            location: {literal: "us-central1"}
+            text: {literal: "That' il do it."}
+            source_language : {literal: "en"}
+            target_language : {literal: "ja"}
+            model_path: {variable: model_path}
+      - assert_contains:
+        # if custom model is not used, it should print "Translated text: Japanese - Google NMT model -> それはしません。"
+        - literal: "それはそうだ"

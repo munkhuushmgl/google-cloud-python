@@ -1,0 +1,47 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Batch Translating Text with Glossary
+
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+    - code: glossary_id = "a" + uuid().replace("-", "")[:30]
+    - code: glossary_path = "projects/{}/locations/{}/glossaries/{}".format(project_id, "us-central1", glossary_id)
+    - code: bucket_name = "gs://" + uuid().replace("-", "")[:20] + "/"
+    - shell: ["gsutil mb", bucket_name]
+    - call:
+        sample: translate_create_glossary_beta
+        params:
+            project: {variable: project_id}
+            # Gross. TODO: file GitHub issue
+            project_2: {variable: project_id}
+            glossary_id: {variable: glossary_id}
+    - code: log(glossary_path)
+    teardown:
+    - shell: ["gsutil rm -r", bucket_name]
+    - code: log('TEARDOWN')
+    - call:
+        sample: translate_delete_glossary_beta
+        params:
+            project: {variable: project_id}
+            glossary_id: {variable: glossary_id}
+    cases:
+    - name: Batch Translating with Glossary Content
+      spec:
+      - call:
+          sample: batch_translate_text_with_glossary
+          params:
+            project: {variable: project_id}
+            location: {literal: "us-central1"}
+            target_language: {literal: "ja"}
+            source_language: {literal: "en"}
+            input_uri: {literal: "gs://translation_samples_beta/resources/text_with_glossary.txt"}
+            output_uri: {variable: bucket_name}
+            glossary_path: {variable: glossary_path}
+      - assert_contains:
+        # Translation for "Hello, world!"
+        - literal: "Total Characters: 9"
+        - literal: "Translated Characters: 9"

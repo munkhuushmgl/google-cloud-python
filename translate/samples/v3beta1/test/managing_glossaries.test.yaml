@@ -1,0 +1,70 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Managing Glossaries
+
+    # One Test Case
+    # Creates, Lists, Gets, and Deletes Glossary
+
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+    - code: glossary_id = "a" + uuid().replace("-", "")[:30]
+
+    cases:
+    - name: Create, List, Get, and Detete Glossary
+      spec:
+      # List (assert not present)
+      - call:
+          sample: translate_list_glossary_beta
+          params:
+            project: {variable: project_id}
+      - assert_not_contains:
+        - variable: glossary_id
+      # Create
+      - call:
+          sample: translate_create_glossary_beta
+          params:
+            project: {variable: project_id}
+            # Gross. TODO: file GitHub issue
+            project_2: {variable: project_id}
+            glossary_id: {variable: glossary_id}
+      - assert_contains:
+        - literal: "Created glossary"
+        - variable: glossary_id
+        # The Input CSV
+        - literal: gs://translation_samples_beta/glossaries/glossary.csv
+      # List (assert present)
+      - call:
+          sample: translate_list_glossary_beta
+          params:
+            project: {variable: project_id}
+      - assert_contains:
+        - variable: glossary_id
+      # Get
+      - call:
+          sample: translate_get_glossary_beta
+          params:
+            project: {variable: project_id}
+            glossary_id: {variable: glossary_id}
+      - assert_contains:
+        - variable: glossary_id
+        # The Input CSV
+        - literal: gs://translation_samples_beta/glossaries/glossary.csv
+      # Delete
+      - call:
+          sample: translate_delete_glossary_beta
+          params:
+            project: {variable: project_id}
+            glossary_id: {variable: glossary_id}
+      - assert_contains:
+        - literal: "Deleted glossary"
+      # List (assert not present)
+      - call:
+          sample: translate_list_glossary_beta
+          params:
+            project: {variable: project_id}
+      - assert_not_contains:
+        - variable: glossary_id

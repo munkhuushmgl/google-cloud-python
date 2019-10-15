@@ -1,0 +1,40 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Translate Text with Glossary
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+    - code: glossary_id = "a" + uuid().replace("-", "")[:30]
+    - code: glossary_path = "projects/{}/locations/{}/glossaries/{}".format(project_id, "us-central1", glossary_id)
+    - call:
+        sample: translate_create_glossary_beta
+        params:
+            project: {variable: project_id}
+            # Gross. TODO: file GitHub issue
+            project_2: {variable: project_id}
+            glossary_id: {variable: glossary_id}
+    teardown:
+    - call:
+        sample: translate_delete_glossary_beta
+        params:
+            project: {variable: project_id}
+            glossary_id: {variable: glossary_id}
+
+    cases:
+
+    - name: Translating Content with glossary (text provided)
+      spec:
+      - call:
+          sample: translate_translate_text_with_glossary_beta
+          params:
+            project: {variable: project_id}
+            text: {literal: "deception"}
+            source_language : {literal: "en"}
+            target_language : {literal: "ja"}
+            glossary_path: {variable: glossary_path}
+      - assert_contains:
+        # if glossary is not used, it should print "Translated text: 欺ception"
+        - literal: "欺く"

@@ -1,0 +1,25 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Batch Translating Text (without glossaries)
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+    - code: bucket_name = "gs://translation_samples_beta/" + uuid().replace("-", "")[:30] + "/"
+    - shell: ["gsutil mb", bucket_name]
+    teardown:
+    - shell: ["gsutil rm -r", bucket_name]
+    cases:
+    - name: Batch Translating Content (simple)
+      spec:
+      - call:
+          sample: batch_translate_text
+          params:
+            project: {variable: project_id}
+            input_uri: {literal: "gs://cloud-samples-data/translation/text.txt"}
+            output_uri: {variable: bucket_name}
+      - assert_contains:
+        - literal: "Total Characters: 13"
+        - literal: "Translated Characters: 13"

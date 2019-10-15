@@ -1,0 +1,19 @@
+type: test/samples
+schema_version: 1
+test:
+  suites:
+  - name: Detecting Language of Text
+    setup:
+    - env:
+        name: GOOGLE_PROJECT_ID
+        variable: project_id
+    cases:
+    - name: Detect Language
+      spec:
+      - call:
+          sample: translate_detect_language_beta
+          params:
+            project: {variable: project_id}
+      - assert_contains:
+        - {literal: "Language Code: en"}
+        - {literal: "Confidence: 0."}

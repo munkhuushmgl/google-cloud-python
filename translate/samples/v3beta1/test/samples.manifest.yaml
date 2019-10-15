@@ -1,0 +1,53 @@
+type: manifest/samples
+schema_version: 3
+base: &common
+  env: 'python'
+  bin: 'python3'
+  chdir: '{@manifest_dir}/../..'
+  basepath: '.'
+samples:
+- <<: *common
+  path: '{basepath}/v3beta1/translate_get_glossary_beta.py'
+  sample: 'translate_get_glossary_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/batch_translate_text.py'
+  sample: 'batch_translate_text'
+- <<: *common
+  path: '{basepath}/v3beta1/batch_translate_text_with_model.py'
+  sample: 'batch_translate_text_with_model'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_create_glossary_beta.py'
+  sample: 'translate_create_glossary_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_detect_language_beta.py'
+  sample: 'translate_detect_language_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_translate_text_with_glossary_beta.py'
+  sample: 'translate_translate_text_with_glossary_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_list_glossary_beta.py'
+  sample: 'translate_list_glossary_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_translate_text_beta.py'
+  sample: 'translate_translate_text_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/batch_translate_text_with_glossary_and_model.py'
+  sample: 'batch_translate_text_with_glossary_and_model'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_translate_text_with_model.py'
+  sample: 'translate_translate_text_with_model'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_translate_text_with_glossary_and_model.py'
+  sample: 'translate_translate_text_with_glossary_and_model'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_list_codes_beta.py'
+  sample: 'translate_list_codes_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_delete_glossary_beta.py'
+  sample: 'translate_delete_glossary_beta'
+- <<: *common
+  path: '{basepath}/v3beta1/batch_translate_text_with_glossary.py'
+  sample: 'batch_translate_text_with_glossary'
+- <<: *common
+  path: '{basepath}/v3beta1/translate_list_language_names_beta.py'
+  sample: 'translate_list_language_names_beta'
